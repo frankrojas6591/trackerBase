@@ -1,0 +1,75 @@
+<!-- ===== templates/dashboard.html ===== -->
+{% extends "base.html" %}
+{% block title %}Dashboard - Expense Tracker{% endblock %}
+{% block content %}
+<div class="card">
+    <h1 style="color: #667eea; margin-bottom: 30px;">Dashboard</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">${{ "%.2f"|format(stats.total) }}</div>
+            <div class="stat-label">Total Expenses</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.count }}</div>
+            <div class="stat-label">Total Transactions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.by_category|length }}</div>
+            <div class="stat-label">Categories</div>
+        </div>
+    </div>
+    
+    {% if stats.by_category %}
+    <h2 style="margin-bottom: 20px;">Expenses by Category</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category, amount in stats.by_category.items() %}
+            <tr>
+                <td><strong>{{ category }}</strong></td>
+                <td>${{ "%.2f"|format(amount) }}</td>
+                <td>{{ "%.1f"|format((amount / stats.total) * 100) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    
+    <h2 style="margin-top: 40px; margin-bottom: 20px;">Recent Expenses</h2>
+    {% if expenses %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses[:5] %}
+            <tr>
+                <td>{{ expense.date }}</td>
+                <td>{{ expense.category }}</td>
+                <td>{{ expense.description }}</td>
+                <td>${{ "%.2f"|format(expense.amount) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('list_expenses') }}" class="btn btn-primary">View All Expenses</a>
+    </div>
+    {% else %}
+    <p style="text-align: center; color: #666;">No expenses yet. <a href="{{ url_for('add_expense') }}">Add your first expense</a></p>
+    {% endif %}
+</div>
+{% endblock %}
+
