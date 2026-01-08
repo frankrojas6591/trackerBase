@@ -17,24 +17,10 @@ app = Flask(__name__)
 app.secret_key = 'your-secret-key-change-this-in-production'
 
 # ===== DATA STORAGE (Simulated Database) =====
-DATA_DIR = 'data'
-USERS_FILE = os.path.join(DATA_DIR, 'users.json')
-EXPENSES_FILE = os.path.join(DATA_DIR, 'expenses.json')
 
+from util import load_json, save_json, DATA_DIR, USERS_FILE, EXPENSES_FILE
 # Create data directory if it doesn't exist
 os.makedirs(DATA_DIR, exist_ok=True)
-
-def load_json(filename):
-    """Load data from JSON file."""
-    if os.path.exists(filename):
-        with open(filename, 'r') as f:
-            return json.load(f)
-    return []
-
-def save_json(filename, data):
-    """Save data to JSON file."""
-    with open(filename, 'w') as f:
-        json.dump(data, f, indent=2)
 
 # ===== AUTHENTICATION DECORATOR =====
 def login_required(f):
@@ -209,4 +195,6 @@ def api_get_statistics():
     return jsonify(stats)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
+

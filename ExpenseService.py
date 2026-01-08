@@ -3,6 +3,9 @@
 Expense Tracker - Complete Flask App with Microservices
 For PythonAnywhere deployment
 """
+from datetime import datetime
+from util import load_json, save_json, DATA_DIR, USERS_FILE, EXPENSES_FILE
+
 # ===== MICROSERVICE: EXPENSE SERVICE =====
 class ExpenseService:
     @staticmethod

@@ -21,6 +21,14 @@ expense-tracker/
     └── edit_expense.html
 ```
 
+## Web Managent
+
+"Web management" of Flask applications primarily involves 
+- deployment strategies
+- using a production WSGI server (like Gunicorn or uWSGI),
+- often with a reverse proxy (Nginx or Apache),
+- and managing the application as a persistent service. 
+
 ## 📦 Step 1: Create requirements.txt
 
 Create a file named `requirements.txt` with this content:
@@ -28,6 +36,13 @@ Create a file named `requirements.txt` with this content:
 ```
 Flask==3.0.0
 ```
+
+### Step 1a: Test
+
+
+````
+pyhon app.py
+````
 
 ## 🚀 Step 2: Sign Up for PythonAnywhere
 
