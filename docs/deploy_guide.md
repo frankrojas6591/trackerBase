@@ -104,6 +104,13 @@ pip install -r requirements.txt
 4. Select **Python 3.10**
 5. Click **Next**
 
+### Manual Conf of WSGI
+Manual configuration involves editing your own WSGI configuration file in /var/www/. Usually this imports a WSGI-compatible application which you've stored elsewhere
+
+When you click "Next", we will create a WSGI file for you, including a simple "Hello World" app which you can use to get started, as well as some comments on how to use other frameworks.
+
+You will also be able to specify a virtualenv to use for your app.
+
 ### Configure WSGI File
 
 1. In the Web tab, find the "Code" section
