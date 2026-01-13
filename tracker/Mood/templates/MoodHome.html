@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Mood Tracker">
+    <title>Mood Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .button-container {
+              display: flex; /* Aligns child elements in a row */
+              gap: 10px;    /* Adds space between the buttons (optional) */
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .feeling-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .feeling-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .feeling-label {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feeling-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 15px;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .feedback {
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 16px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .averages {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .avg-box {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+        }
+        
+        .avg-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .avg-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .history {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .history-item {
+            padding: 12px;
+            background: #f5f7fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .history-date {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .history-values {
+            display: flex;
+            gap: 15px;
+            color: #666;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🌈 {{ company_name }}</h1>
+            
+            <div>
+                <p class="subtitle">{{user }} How are you feeling today? </p>
+            </div>
+            
+            <div class="feeling-group">
+                <div class="feeling-header">
+                    <span class="feeling-label">⚡ Power / Control</span>
+                    <span class="feeling-value" id="mood1-value">5</span>
+                </div>
+                <input type="range" id="mood1" min="1" max="10" value="5">
+                <div class="range-labels">
+                    <span>Powerless</span>
+                    <span>Powerfull</span>
+                </div>
+            </div>
+            
+            <div class="feeling-group">
+                <div class="feeling-header">
+                    <span class="feeling-label">😰 Collaborate / Care</span>
+                    <span class="feeling-value" id="mood2-value">5</span>
+                </div>
+                <input type="range" id="mood2" min="1" max="10" value="5">
+                <div class="range-labels">
+                    <span>I'm Alone</span>
+                    <span>Trusted</span>
+                </div>
+            </div>
+            
+            <div class="feeling-group">
+                <div class="feeling-header">
+                    <span class="feeling-label">😊 Respected / Recognized</span>
+                    <span class="feeling-value" id="mood3-value">5</span>
+                </div>
+                <input type="range" id="mood3" min="1" max="10" value="5">
+                <div class="range-labels">
+                    <span>Dismissed</span>
+                    <span>Valued</span>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn" onclick="saveMood()">Save Mood</button>
+                <button class="btn" onclick="saveMood()">Save With Remark</button>
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+        </div>
+        
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 15px;">📊 7-Day Averages</h2>
+            <div class="averages" id="averages"></div>
+            
+            <button class="btn btn-secondary" onclick="toggleHistory()">
+                <span id="history-btn-text">View History</span>
+            </button>
+            
+            <div class="history hidden" id="history"></div>
+        </div>
+    </div>
+
+    <script>
+
+        
+        // Update slider values in real-time
+        document.getElementById('mood1').addEventListener('input', function(e) {
+            document.getElementById('mood1-value').textContent = e.target.value;
+        });
+        
+        document.getElementById('mood2').addEventListener('input', function(e) {
+            document.getElementById('mood2-value').textContent = e.target.value;
+        });
+        
+        document.getElementById('mood3').addEventListener('input', function(e) {
+            document.getElementById('mood3-value').textContent = e.target.value;
+        });
+
+        // Track changes to whoisit dropdown
+        // Store in sessionStorage: whoID
+        const e_whoID = document.getElementById('whoisit');
+        e_whoID.addEventListener('change', (event) => {
+            // Get the newly selected value
+            const whoID = event.target.value;
+            
+            // Update the result display or perform other actions
+            sessionStorage.setItem('whoID', whoID)
+            loadAverages();
+            hideHistory();
+            console.log('--> Select whoisit changed, sessionStorage set whoID:', whoID);
+        });
+        
+        function saveMood() {
+            const whoIDElm = document.getElementById('whoisit');
+            
+            const data = {
+                uiID : 'UI_3',
+                whoID: e_whoID.value,
+                mood1: parseInt(document.getElementById('mood1').value),
+                mood2: parseInt(document.getElementById('mood2').value),
+                mood3: parseInt(document.getElementById('mood3').value)
+            };
+            
+            fetch('/save', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const feedbackEl = document.getElementById('feedback');
+                feedbackEl.textContent = result.feedback;
+                feedbackEl.style.display = 'block';
+                loadAverages();
+                loadHistory();
+            });
+        }
+        
+        function loadAverages() {
+            //const e_whoID = document.getElementById('whoisit');
+            const whoID = sessionStorage.getItem('whoID');
+            
+            const args = {
+                uiID : 'UI_3',
+                whoID: whoID
+            }
+
+            console.log("Load Avg API to server", args)
+
+            const params = new URLSearchParams(args);
+            fetch(`/averages?${params}`, {
+              method: 'GET' // 'GET' is default
+              // No body property
+            })
+            .then(response => response.json())
+            .then(data => {
+                const avgEl = document.getElementById('averages');
+                avgEl.innerHTML = `
+                    <div class="avg-box">
+                        <div class="avg-value">${data.mood1}</div>
+                        <div class="avg-label">⚡ Power / Control</div>
+                    </div>
+                    <div class="avg-box">
+                        <div class="avg-value">${data.mood2}</div>
+                        <div class="avg-label">😰 Collaborate / Care</div>
+                    </div>
+                    <div class="avg-box">
+                        <div class="avg-value">${data.mood3}</div>
+                        <div class="avg-label">😊 Respected / Recognized</div>
+                    </div>
+                `;
+            });
+
+        }
+        
+        function loadHistory() {
+            //const e_whoID = document.getElementById('whoisit');
+            const whoID = sessionStorage.getItem('whoID');
+            
+            const args = {
+                uiID : 'UI_3',
+                whoID: whoID
+            }
+
+            console.log("Load Avg API to server", args)
+
+            const params = new URLSearchParams(args);
+            fetch(`/history?${params}`, {
+              method: 'GET' // 'GET' is default
+              // No body property
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const historyEl = document.getElementById('history');
+                    if (data.length === 0) {
+                        historyEl.innerHTML = '<p style="text-align: center; color: #666;">No entries yet</p>';
+                        return;
+                    }
+                    console.log('--> loadHistory: update entries', whoID)
+                    historyEl.innerHTML = data.map(entry => `
+                        <div class="history-item">
+                            <div class="history-date">${entry.date}</div>
+                            <div class="history-values">
+                                <span>⚡ ${entry.mood1}</span>
+                                <span>😰 ${entry.mood2}</span>
+                                <span>😊 ${entry.mood3}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                });
+        }
+        
+        function hideHistory() {
+            const historyEl = document.getElementById('history');
+            const btnText = document.getElementById('history-btn-text');
+            historyEl.classList.remove('hidden');
+            btnText.textContent = 'Hide History';
+            loadHistory();
+        };
+            
+
+        
+        function toggleHistory() {
+            const historyEl = document.getElementById('history');
+            const btnText = document.getElementById('history-btn-text');
+            
+            if (historyEl.classList.contains('hidden')) {
+                historyEl.classList.remove('hidden');
+                btnText.textContent = 'Hide History';
+                loadHistory();
+            } else {
+                historyEl.classList.add('hidden');
+                btnText.textContent = 'View History';
+            }
+        }
+
+        // Initialise session whoID - per session
+        sessionStorage.setItem('whoID', '?');
+        
+        // Load averages on page load
+        loadAverages();
+    </script>
+</body>
+</html>

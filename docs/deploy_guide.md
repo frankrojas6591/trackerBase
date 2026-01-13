@@ -4,6 +4,57 @@
 
 Create this folder structure on your local machine:
 
+### Template 1 
+This is based on `HowTo Large Flask` example. 
+
+### Template 2
+
+Each app has two sections: the public site and the admin panel, referred to as “home” and “admin” respectively in our app. This is critical to managing static files (.js/.css) per app. 
+```
+
+Refer to 
+
+~/tracker                   # Manage data outside of github
+├── profile_TrackerProfile.json
+├── profile_Tracker_Ext1.json
+├── profile_Tracker_Ext2.json
+
+~/trackerBase/
+├── run.py                  # Main Flask application
+├── config.py               # Web Service configuration; Base 
+├── requirements.txt        # Python dependencies
+├── tracker
+│   ├──__init__.py
+│   ├──Base                 # Flask app web service, used for basic test (min UI, used for testing UI new things)
+│       ├── app.py          # initialize, dashboard, include app routes,  api requests (GET/POST)               
+│       ├── templates                
+    ├─-Ext1                 # LLC Ledger manager (mult object: users, assets, expenses/ ledgers)
+│       ├── app.py                
+│       ├── templates                
+    ├─-Ext2                 # Track simple list of objs
+│       ├── app.py                
+│       ├── templates
+
+~/tracker/db                # Persistent Data storage (will be created automatically)
+│   ├──Base                 # used for testing basics
+│       ├── n/a 
+│   ├──Ext1                 # Example: LLC ledger books
+│       ├── registry.json
+│       ├── expenses.json
+│       ├── expenses.json
+│       ├── users.json
+│       ├── leder.json
+│       ├── backupExt1.zip - save all data weekly
+│   ├─-Ext2                 # Group data, visiblity - per user data
+│       ├── registry.json
+│       ├── groups.json       
+
+        
+```
+
+
+
+### Template 3
 ```
 expense-tracker/
 ├── app.py                  # Main Flask application
@@ -29,7 +80,9 @@ expense-tracker/
 - often with a reverse proxy (Nginx or Apache),
 - and managing the application as a persistent service. 
 
-## 📦 Step 1: Create requirements.txt
+## 📦 Step 1: Develop Code Base
+
+## 1a: Create requirements.txt
 
 Create a file named `requirements.txt` with this content:
 
@@ -37,7 +90,14 @@ Create a file named `requirements.txt` with this content:
 Flask==3.0.0
 ```
 
-### Step 1a: Test
+## Flask-Blueprints Template Tutorial/Examples
+
+1. [github> Flask-Blueprint Template](https://github.com/hackersandslackers/flask-blueprint-tutorial/tree/master)
+1. [Flask Extension Development](https://flask.palletsprojects.com/en/stable/extensiondev/)
+1. [HowTo Large Flask](https://www.digitalocean.com/community/tutorials/how-to-structure-a-large-flask-application-with-flask-blueprints-and-flask-sqlalchemy)
+2. [Flask-Blueprint Basic](https://www.geeksforgeeks.org/python/flask-blueprints/)
+
+### Step 1c: Test
 
 
 ````
