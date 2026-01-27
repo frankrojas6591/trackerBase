@@ -5,29 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('ToDo.static', filename='styles.css') }}"> 
     <title>Todo Tracker</title>
-    <style>
-        .table-container {
-            height: 300px; /* Fixed height for scrollability */
-            overflow-y: auto; /* Enable vertical scrolling */
-            border: 1px solid #ccc;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-            cursor: pointer; /* Indicate rows are clickable */
-        }
-        .selected {
-            background-color: #e0e0e0; /* Style for selected row */
-        }
-    </style>
 </head>
 <body>
     
@@ -50,8 +27,8 @@
         <table>
         <thead>
             <tr>
-                <th>Desc</th>
-                <th>Category</th>
+                <th>desc</th>
+                <th>category</th>
             </tr>
         </thead>
         <tbody>
@@ -74,10 +51,14 @@
     <h2>All Tasks</h2>
     <p>taskList: {{ taskList|length }}</p>
     <div class="table-container">
+        <script type="text/javascript">
+            const api_taskAction = {{ url_for('ToDo.taskAction') | tojson }};
+        </script>
+        api: {{ api_taskAction }}
         <table id="data-table">
             <thead>
                 <tr>
-                    <th>>desc</th>
+                    <th>desc</th>
                     <th>category</th>
                 </tr>
             </thead>
@@ -110,9 +91,11 @@
                 
                 // Send an AJAX POST request to the Flask backend
                 $.ajax({
-                    url: '/view_action',
+                    url: api_taskAction, //url_for('ToDo.taskAction') //'/view_action',
                     type: 'POST',
-                    data: { item_id: itemId },
+                    data: { item_id: itemId,
+                            taskID: itemId,
+                            action: 'Active'}
                     success: function(response) {
                         // Display the action message in the output area
                         if (response.status === 'success') {

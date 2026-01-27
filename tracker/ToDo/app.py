@@ -58,8 +58,8 @@ def tasks():
     # Pass the data to the Jinja2 template
     return render_template('table.html', items=ext.taskList) #ext.taskList)
 
-@bp.route('/view_action', methods=['POST'])
-def view_action():
+@bp.route('/taskAtion', methods=['POST'])
+def taskAction():
     # Receive the selected row ID from the JavaScript AJAX request
     item_id = request.form.get('item_id')
     # Perform backend logic (e.g., fetch more details from a database)
@@ -75,6 +75,22 @@ def view_action():
     else:
         return jsonify({'status': 'error', 'message': 'Item not found'})
 
+@bp.route('/taskAtion2', methods=['POST'])
+def taskAction2():
+    # Receive the selected row ID from the JavaScript AJAX request
+    item_id = request.form.get('item_id')
+    # Perform backend logic (e.g., fetch more details from a database)
+    selected_item = next((item for item in data_rows if item['id'] == int(item_id)), None)
+    
+    if selected_item:
+        # Return a JSON response with the action details
+        return jsonify({
+            'status': 'success',
+            'message': f"Action performed for {selected_item['name']}. Description: {selected_item['description']}",
+            'item_name': selected_item['name']
+        })
+    else:
+        return jsonify({'status': 'error', 'message': 'Item not found'})
 
 @bp.route('/about')
 def about():

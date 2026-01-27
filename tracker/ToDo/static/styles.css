@@ -22,11 +22,12 @@ li {
 
 /* Styles for the table container itself */
 table {
-  width: 50%; /* Table width must be less than 100% for margin: auto to work */
+  width: 100%; /* Table width must be less than 100% for margin: auto to work */
   border-collapse: collapse; /* Single borders */
   margin-left: auto; /* Centers the table horizontally */
   margin-right: auto;
 }
+
 
 /* Styles for the individual table cells and headers */
 th, td {
@@ -86,3 +87,11 @@ tr:hover {
 .selected {
     background-color: #e0e0e0; /* Style for selected row */
 }
+
+
+.table-container {
+    height: 300px; /* Fixed height for scrollability */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc;
+}
+
