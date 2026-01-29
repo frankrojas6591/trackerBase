@@ -46,6 +46,10 @@ class ToDo(appBase):
             return taskList
         return []
 
+    def fetch(self):
+        self.taskList = self.load()
+        return self.taskList
+
     def save(self):
         FN = self.FN()
         todoDIR = Path(FN).parent
@@ -81,9 +85,9 @@ class ToDo(appBase):
                            status = 'Active'
                           )                
             self.updateTaskList(newDict)
+            return newDict
         else:
-            return False
-        return True
+            return None
 
     def find(self, taskDict):
         for i in range(len(self.taskList)):
@@ -91,11 +95,19 @@ class ToDo(appBase):
                 return i
         return None
 
-    def delete(self, taskDict):
-        i = self.find(taskDict)
-        if i is None : return False
-        self.taskList[i]['status'] = 'Del'
-        return True
+    def get(self, taskID):
+        for tDict in self.taskList:
+            if tDict['taskID'] == taskID :
+                return tDict
+        return None
+
+    def setStatus(self, taskID, status):
+        tDict = self.get(taskID)
+        if tDict: 
+            tDict['status'] = status
+            return tDict
+        return None
+            
         
 
         

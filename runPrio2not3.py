@@ -14,11 +14,12 @@ app = Flask(__name__)
 app.secret_key = '685ced89519dfc2bd879c3dcbeefa36fc50172a4eda8f914b65dfc6cf9a442d4'
 
 # Register blueprints
-app.register_blueprint(bp, url_prefix='/items')
+app.register_blueprint(bp, url_prefix='/ToDo/api')
 
-@app.route('/')
-def index():
-    return render_template('Prio2not3.html')
+if False:
+    @app.route('/')
+    def index():
+        return render_template('Prio2not3.html')
 
 app.run(debug=True, port=8001)
 
