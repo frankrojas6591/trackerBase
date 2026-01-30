@@ -1,31 +1,33 @@
-from flask import Blueprint
-from flask import current_app as app
-from flask import render_template, request, redirect, url_for
+# ===== blueprints/items.py =====
+"""
+Items Blueprint - Handles all item CRUD operations
+"""
+
+from flask import Blueprint, render_template, request, jsonify
 import json
-
-from tracker.util.util import routesList
-
-#---------------
-# app object
-#---------------
+import os
 
 from .ToDo import ToDo
 
 ext = ToDo()
 
-def create_ext(app):
-    return ext
-
-#---------------
-# declare blue print 
-#---------------
-# Blueprint Configuration
+#OLD: bp = Blueprint('ToDo', __name__, template_folder="templates", static_folder="static")
 bp = Blueprint(ext.oID, __name__, url_prefix=f'/{ext.oID}/api', template_folder="templates", static_folder="static")
 
 
-#---------------
-# routes
-#---------------
+# Simulated database (in production, use a real database)
+ITEMS_FILE = 'data/items.json'
+
+
+def setStatus(item_id, status):
+    ext.load()
+    tDict = ext.setStatus(item_id, status)
+    if tDict : 
+        ext.save()
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'message': 'Item not found'}), 404
+
+
 #import .routes
 @bp.route('/test')
 def _test():
@@ -37,64 +39,71 @@ def _test():
     msg += f"<br>app.name: {app.name}"
     msg += f"<br>Status:Active"
     msg += f"<p>{str(ext).replace('\n','<br>')}"
-    msg += f"<p>----- List All routesn ---"
-    msg += rStr
+    print("ToDo _test:", msg)
     return msg
-
-
+    
 @bp.route('/')
-def home():
-    #print("---- ToDo.home route", flush=True)
-    return render_template('taskList.html', taskList=ext.taskList)
+def index():
+    return render_template('ToDo.html')
+
+
+@bp.route('/list', methods=['GET'])
+def get_items():
+    """Get all items (AJAX endpoint)."""
+    dispOrder = ['Prio2_3', 'Active', 'Hidden', 'Done', 'Del']
+
+    # Merge lists in order of dispOrder
+    itemList = ext.fetch()
+    dispList = []
+    for s in dispOrder:
+        dispList += [t for t in itemList if t['status'] == s]
+    
+    # Add any items not in sOrder
+    dispList += [t for t in itemList if t['status'] not in dispOrder]
+        
+    return jsonify(dispList)
+
+@bp.route('/done/<item_id>', methods=['GET'])
+def setDone(item_id):
+    """Get all items (AJAX endpoint)."""
+    setStatus(item_id, 'Done')
+    return jsonify({'success': True})
+
+@bp.route('/delete/<item_id>', methods=['DELETE'])
+def delete_item(item_id):
+    """Delete item (AJAX endpoint)."""
+    setStatus(item_id, 'Del')
+    return jsonify({'success': True})
 
 @bp.route('/add', methods=['POST'])
-def add_todo():
-    taskDict = request.form
-    ext.add(taskDict)
-    return redirect(url_for('.home'))
+def add_item():
+    """Add new item (AJAX endpoint)."""
+    itemDict = request.json
+    ext.load()
+    new_item = ext.add(itemDict)
+    return jsonify({'success': True, 'item': new_item})
 
-@bp.route('/tasks')
-def tasks():
-    # Pass the data to the Jinja2 template
-    return render_template('table.html', items=ext.taskList) #ext.taskList)
+@bp.route('/update/<item_id>', methods=['PUT'])
+def update_item(item_id):
+    """Update existing item (AJAX endpoint)."""
+    data = request.json
 
-@bp.route('/taskAtion', methods=['POST'])
-def taskAction():
-    # Receive the selected row ID from the JavaScript AJAX request
-    item_id = request.form.get('item_id')
-    # Perform backend logic (e.g., fetch more details from a database)
-    selected_item = next((item for item in data_rows if item['id'] == int(item_id)), None)
-    
-    if selected_item:
-        # Return a JSON response with the action details
-        return jsonify({
-            'status': 'success',
-            'message': f"Action performed for {selected_item['name']}. Description: {selected_item['description']}",
-            'item_name': selected_item['name']
-        })
-    else:
-        return jsonify({'status': 'error', 'message': 'Item not found'})
-
-@bp.route('/taskAtion2', methods=['POST'])
-def taskAction2():
-    # Receive the selected row ID from the JavaScript AJAX request
-    item_id = request.form.get('item_id')
-    # Perform backend logic (e.g., fetch more details from a database)
-    selected_item = next((item for item in data_rows if item['id'] == int(item_id)), None)
-    
-    if selected_item:
-        # Return a JSON response with the action details
-        return jsonify({
-            'status': 'success',
-            'message': f"Action performed for {selected_item['name']}. Description: {selected_item['description']}",
-            'item_name': selected_item['name']
-        })
-    else:
-        return jsonify({'status': 'error', 'message': 'Item not found'})
-
-@bp.route('/about')
-def about():
-    return render_template('about.html')
+    ext.load()
+    tDict = ext.get(item_id)
+    if tDict:
+        tDict['category'] = data.get('category', tDict['category'])
+        tDict['desc'] = data.get('desc', tDict['desc'])
+        ext.save()
+        return jsonify({'success': True, 'item': tDict})
+    return jsonify({'success': False, 'message': 'Item not found'}), 404
 
 
+@bp.route('/get/<item_id>', methods=['GET'])
+def get_item(item_id):
+    """Get single item (AJAX endpoint)."""
+    ext.load()
+    tDict = ext.get(item_id)
+    if tDict:
+        return jsonify({'success': True, 'item': tDict})
+    return jsonify({'success': False, 'message': 'Item not found'}), 404
 

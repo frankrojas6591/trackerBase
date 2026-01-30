@@ -34,8 +34,9 @@ def _test():
     msf = f"<br>session:{str(session)}"
     msg += "<br>Status:Active"
     msg += f"<p>{str(ext).replace('\n','<br>')}"
-
-    return 
+    print("Mood Debug app:", msg)
+    return msg
+    
 @app.route('/login', methods=['POST'])
 def login():
     # Get data from the request form
@@ -59,9 +60,10 @@ def home(grpID, userID):
     # For this example, we return a simple JSON response.
     # Pass the company_name variable to the HTML template
 
+    
     ## FIXME
     #-- Validate grpID, userID
-    gData= grpData(grpID = sys.argv[1])
+    #gData= grpData(grpID = sys.argv[1])
 
     
 
