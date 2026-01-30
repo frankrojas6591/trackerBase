@@ -9,52 +9,8 @@
 
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Priority 2 not 3</h2>
-    </div>
-    
-    <div id="alert-container"></div>
-    
-    <table id="items-prio-table">
-        <thead>
-            <tr>
-                <th class="hide-column">taskID</th>
-                <th class="hide-column">date</th>
-                <th>
-                    Category 
-                </th>
-                <th>ToDo</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="items-prio-tbody">
-            <tr>
-                <td colspan="7" style="text-align: center; padding: 40px;">
-                    Loading items...
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div>
-    <p>&nbsp; </p>
-</div>
-
-<div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2>All ToDo's</h2>
-        <div stype="align-items: right" class="btn-oneline">
-            <button class="btn btn-success" onclick="openAddDialog()">+ ToDo</button>
-            <div>
-                <select id="sortByDropdown" onchange="sortBy()">
-                  <option value="LIFO">LIFO</option>
-                  <option value="Category">Category</option>
-                  <option value="FIFO">Created</option>
-                </select>
-                <!-- <button id="sortByBtn" onclick="sortBy()">LiFo</button> -->
-            </div>
-            <button class="left-align-text" onclick="viewToggle()">👁</button>
-        </div>
+        <button class="btn btn-success" onclick="openAddDialog()">+ ToDo</button>
     </div>
     
     <div id="alert-container"></div>
@@ -150,44 +106,15 @@
 {% block scripts %}
 <script>
 let currentDeleteId = null;
-let currentView = 'home'
-let currentSort = 'lifo' // fifo, category, lifo
 
 // Load items on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadItems();
 });
 
-function viewToggle() {
-    if (currentView == 'home') { 
-        currentView = 'All'; 
-    } else {
-        currentView = 'home';
-    }
-    loadItems()
-}
-
-function sortBy() {
-    
-    const dropdown = document.getElementById("sortByDropdown");
-    const selectedValue = dropdown.value;
-    const butLabel = document.getElementById("sortByBtnValue");
-    
-    // Perform action based on selection
-    if (selectedValue) {
-        
-        currentSort = selectedValue;
-        //resultElement.innerText = "You selected: " + selectedValue;
-        console.log("sortBy: " + selectedValue);
-    }
-    loadItems()
-}
-
-
 // Load and display items
 function loadItems() {
-    console.log('loadItem: api:', `/ToDo/api/list/${currentView}/${currentSort}`)
-    fetch(`/ToDo/api/list/${currentView}/${currentSort}`)
+    fetch('/ToDo/api/list')
         .then(response => response.json())
         .then(items => {
             const tbody = document.getElementById('items-tbody');
@@ -212,37 +139,6 @@ function loadItems() {
                     <td>${item.status}</td>
                     <td>
                         <div class="actions">
-                            <button class="btn btn-status btn-sm" onclick="status('${item.taskID}','Prio')">▲</button>
-                            <button class="btn btn-action btn-sm" onclick="statusDone('${item.taskID}')">✅</button>
-                            <button class="btn btn-action btn-sm" onclick="openDeleteDialog('${item.taskID}')"><strong>&#128465;</strong></button>
-                            <button class="btn btn-action btn-sm" onclick="openEditDialog('${item.taskID}')">&#x270D;</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            //-----------
-            // Load Prio List
-            //---------
-
-            const pbody = document.getElementById('items-prio-tbody');
-            // Use the filter method to create a new list of dictionaries
-            const pItemList = items.filter(tDict => {
-                // The condition: only return objects where the status property is 'in stock'
-                return tDict.status === 'Prio';
-            })
-            
-            pbody.innerHTML = pItemList.map(item => `
-                <tr>
-                    <!-- item1:.id, item2:.dt, item3.category, item4.desc, item5.status -->
-                    <td class="hide-column">${item.taskID}</td>
-                    <td class="hide-column">${item.dt}</td>
-                    <td>${item.category}</td>
-                    <td>${item.desc}</td>
-                    <td>${item.status}</td>
-                    <td>
-                        <div class="actions">
-                            <button class="btn btn-status btn-sm" onclick="status('${item.taskID}','Active')">▼</button>
                             <button class="btn btn-action btn-sm" onclick="statusDone('${item.taskID}')">✅</button>
                             <button class="btn btn-action btn-sm" onclick="openDeleteDialog('${item.taskID}')"><strong>&#128465;</strong></button>
                             <button class="btn btn-action btn-sm" onclick="openEditDialog('${item.taskID}')">&#x270D;</button>
@@ -310,24 +206,6 @@ function addItem(event) {
     });
 }
 
-// Set item status
-function status(itemId, st) {
-    fetch(`/ToDo/api/status/${itemId}/${st}`)
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                loadItems(); // reload to flush the item
-            } else {
-                console.error(`Error setStatus failed: ${itemId}.`, 1001);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Error loading item', 'danger');
-        });
-}
-
-
 // Edit Item Dialog
 function statusDone(itemId) {
     fetch(`/ToDo/api/done/${itemId}`)
@@ -343,9 +221,7 @@ function statusDone(itemId) {
             console.error('Error:', error);
             showAlert('Error loading item', 'danger');
         });
-}
-
-// Edit Item Dialog
+}// Edit Item Dialog
 function openEditDialog(itemId) {
     fetch(`/ToDo/api/get/${itemId}`)
         .then(response => response.json())

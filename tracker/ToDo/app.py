@@ -47,21 +47,37 @@ def index():
     return render_template('ToDo.html')
 
 
-@bp.route('/list', methods=['GET'])
-def get_items():
+@bp.route('/list/<view>/<sortBy>', methods=['GET'])
+def get_items(view, sortBy):
     """Get all items (AJAX endpoint)."""
-    dispOrder = ['Prio2_3', 'Active', 'Hidden', 'Done', 'Del']
+    return jsonify(ext.fetch(view, sortBy))
+                   
+    if view == 'home':  
+        # default home view : exclude Done, Del
+        dispOrder = ['Prio', 'Active', 'Hidden']
+    elif view == 'All':
+        dispOrder = ['Prio', 'Active', 'Hidden', 'Done', 'Del']
 
-    # Merge lists in order of dispOrder
+    # ------ filter view : Merge lists in order of dispOrder
     itemList = ext.fetch()
     dispList = []
     for s in dispOrder:
         dispList += [t for t in itemList if t['status'] == s]
     
     # Add any items not in sOrder
-    dispList += [t for t in itemList if t['status'] not in dispOrder]
+    if view == 'All' :
+        dispList += [t for t in itemList if t['status'] not in dispOrder]
+
+    #-------- sort -----
+    
         
     return jsonify(dispList)
+
+@bp.route('/status/<item_id>/<st>', methods=['GET'])
+def status(item_id,st):
+    """Get all items (AJAX endpoint)."""
+    setStatus(item_id, st)
+    return jsonify({'success': True})
 
 @bp.route('/done/<item_id>', methods=['GET'])
 def setDone(item_id):

@@ -46,9 +46,32 @@ class ToDo(appBase):
             return taskList
         return []
 
-    def fetch(self):
+    def fetch(self, view='home', sortBy='lifo'):
         self.taskList = self.load()
-        return self.taskList
+        
+        """Get all items (AJAX endpoint)."""
+        if view == 'home':  
+            # default home view : exclude Done, Del
+            dispOrder = ['Prio', 'Active', 'Hidden']
+        elif view == 'All':
+            dispOrder = ['Prio', 'Active', 'Hidden', 'Done', 'Del']
+    
+        # ------ filter view : Merge lists in order of dispOrder
+        itemList = self.taskList
+        dispList = []
+        for s in dispOrder:
+            dispList += [t for t in itemList if t['status'] == s]
+        
+        # Add any items not in sOrder
+        if view == 'All' :
+            dispList += [t for t in itemList if t['status'] not in dispOrder]
+    
+        #-------- sort -----
+
+        # Sort using a lambda function
+        if sortBy == 'LIFO': return sorted(dispList, key=lambda d: d['dt'], reverse=True)
+        if sortBy == 'Category': return sorted(dispList, key=lambda d: d['category'])
+        return dispList
 
     def save(self):
         FN = self.FN()
